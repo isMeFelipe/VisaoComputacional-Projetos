@@ -19,12 +19,11 @@ frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = video.get(cv2.CAP_PROP_FPS)
 
-
 previous_frame = None
 
 trail_frame = None    # Imagem de rastro (inicializada como zero)
 
-decay_rate = 0.1
+decay_rate = 0.1  # Diminuí o decay_rate para aumentar a persistência do rastro
 
 frame_count = 0
 
@@ -50,11 +49,11 @@ while True:
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
 
     mask = np.zeros_like(frame, dtype=np.uint8)
-    mask[thresh > 0] = [0, 0, 255] # Cor vermelha para o rastro
-    
-    trail_frame = cv2.multiply(trail_frame, 1 - decay_rate)
+    mask[thresh > 0] = [0, 0, 255]  # Cor vermelha para o rastro
 
-    #trail_frame = cv2.add(trail_frame, mask.astype(np.float32)) # Para deixar o rastro mais expressivo
+    trail_frame = cv2.multiply(trail_frame, 1 - decay_rate)
+    
+    trail_frame = cv2.add(trail_frame, mask.astype(np.float32)) # Adição para deixar o rastro mais expressivo
 
     frame_with_trail = cv2.add(frame, mask)
 
@@ -66,7 +65,6 @@ while True:
 
     frame_filename = f"{output_folder}/frame_{frame_count:04d}.jpg"
     cv2.imwrite(frame_filename, combined_frame)
-
 
     frame_count += 1
 
